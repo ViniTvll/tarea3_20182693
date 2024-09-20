@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Información del Empleado</title>
+</head>
+<body>
+<h1>Información del Empleado</h1>
+
+<p><strong>Nombre:</strong> <span th:text="${employee.firstName}"></span></p>
+<p><strong>Apellido:</strong> <span th:text="${employee.lastName}"></span></p>
+<p><strong>Correo:</strong> <span th:text="${employee.email}"></span></p>
+<p><strong>Departamento:</strong> <span th:text="${employee.departmentName}"></span></p>
+<p><strong>Ciudad:</strong> <span th:text="${employee.locationCity}"></span></p>
+
+<p><strong>Trabajo:</strong></p>
+<select name="job">
+  <option th:each="job : ${listaTrabajos}" th:value="${job.jobId}" th:text="${job.jobTitle}"></option>
+</select>
+
+<br><br>
+<button onclick="window.history.back()">Regresar</button>
+</body>
+</html>

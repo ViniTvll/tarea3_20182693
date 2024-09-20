@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <form method="post" th:action="@{/employee/buscarPorNombre}">
+        <div class="input-group mb-3">
+            <input name="searchField" class="form-control" type="text" placeholder="Buscar por nombre" th:value="${textoBuscado}" >
+            <button class="btn btn-primary" type="submit">Buscar</button>
+            <a class="btn btn-outline-secondary" th:href="@{/employee}">Limpiar</a>
+        </div>
+    </form>
+    <title>Lista de Empleados</title>
+    <style>
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .popup.show {
+            display: block;
+        }
+        .popup button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>Lista de Empleados</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Departamento</th>
+        <th>Ciudad</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="empleado : ${listaEmpleados}">
+        <td th:text="${empleado.employeeId}"></td>
+        <td th:text="${empleado.firstName}"></td>
+        <td th:text="${empleado.lastName}"></td>
+        <td th:text="${empleado.department}"></td>
+        <td th:text="${empleado.location}"></td>
+        <td>
+            <a th:href="@{'/employee/info/' + ${empleado.employeeId}}">Ver</a> |
+            <a th:href="@{'/employee/delete/' + ${empleado.employeeId}}">Eliminar</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div id="popup" class="popup">
+    <p id="popupMessage"></p>
+    <button onclick="closePopup()">Cerrar</button>
+</div> /* popup hecho */
+
+<script>
+    function showPopup(message) {
+        var popup = document.getElementById('popup');
+        var popupMessage = document.getElementById('popupMessage');
+        popupMessage.textContent = message;
+        popup.classList.add('show');
+    }
+
+    function closePopup() {
+        document.getElementById('popup').classList.remove('show');
+    }
+
+    function confirmDelete(url) {
+        if (confirm('¿Estás seguro de que deseas eliminar este empleado?')) {
+            fetch(url, { method: 'DELETE' })
+                .then(response => {
+                    if (response.ok) {
+                        showPopup('Se borró el empleado');
+                        setTimeout(() => {
+                            window.location.href = '/employee'; // Redirige a la lista de empleados
+                        }, 2000); // Espera 2 segundos antes de redirigir
+                    } else {
+                        showPopup('No se pudo borrar el empleado');
+                    }
+                })
+                .catch(() => showPopup('No se pudo borrar el empleado'));
+        }
+    }
+
+    // Mostrar el popup en caso de que haya mensajes en la URL
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('msg')) {
+            const message = urlParams.get('msg');
+            showPopup(message);
+        }
+    };
+</script>
+
+</body>
+</html>
